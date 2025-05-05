@@ -74,14 +74,26 @@ public class QuickSorter {
         E pivotElement;
 
         // Figure out the pivot strategy.
-        if (pivotStrategy == PivotStrategy.FIRST_ELEMENT) {
-            // Use the first element as the pivot element.
-            pivotElement = list.get(leftStartingIndex);
-        }
-        else {
-            throw new UnsupportedOperationException("Unsupported Pivot Strategy.");
+        switch (pivotStrategy) {
+            case FIRST_ELEMENT:
+                // Use the first element as the pivot element.
+                pivotElement = list.get(leftStartingIndex);
+                break;
+
+            case RANDOM_ELEMENT:
+                // Select random element between the left and the right.
+                int randomIndex = new Random().nextInt(rightEndingIndex - leftStartingIndex + 1) + leftStartingIndex;
+
+                // Swap the random element to the front then re-use the partition logic.
+                swap(list, leftStartingIndex, randomIndex);
+                pivotElement = list.get(leftStartingIndex);
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unsupported Pivot Strategy.");
         }
 
+        // PARTITION LOGIC
         // Variables used for partitioning.
         int i = leftStartingIndex + 1; // Begin right after the pivot element.
         int j = rightEndingIndex; // Begin at the end of the list.
