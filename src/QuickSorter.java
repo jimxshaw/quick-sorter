@@ -8,6 +8,7 @@ public class QuickSorter {
         FIRST_ELEMENT,
         RANDOM_ELEMENT,
         MEDIAN_OF_THREE_RANDOM_ELEMENTS,
+        // First, Middle, Last
         MEDIAN_OF_THREE_ELEMENTS
     }
 
@@ -86,6 +87,34 @@ public class QuickSorter {
 
                 // Swap the random element to the front then re-use the partition logic.
                 swap(list, leftStartingIndex, randomIndex);
+                pivotElement = list.get(leftStartingIndex);
+                break;
+
+            case MEDIAN_OF_THREE_ELEMENTS:
+                // This is the "book approach", which uses First, Middle, Last elements.
+                int midpoint = (leftStartingIndex + rightEndingIndex) / 2;
+
+                E firstElement = list.get(leftStartingIndex);
+                E middleElement = list.get(midpoint);
+                E lastElement = list.get(rightEndingIndex);
+
+                // Figure out the median among the elements.
+                int compareFirstAndMiddle = firstElement.compareTo(middleElement);
+                int compareFirstAndLast = firstElement.compareTo(lastElement);
+                int compareMiddleAndLast = middleElement.compareTo(lastElement);
+
+                int medianIndex;
+
+                if ((compareFirstAndMiddle <= 0 && compareMiddleAndLast <= 0 && compareFirstAndMiddle >= compareFirstAndLast) || (compareFirstAndMiddle >= 0 && compareMiddleAndLast >= 0 && compareFirstAndMiddle <= compareFirstAndLast)) {
+                    medianIndex = leftStartingIndex;
+                } else if ((compareFirstAndMiddle >= 0 && compareMiddleAndLast <= 0 && compareFirstAndLast >= compareMiddleAndLast) || (compareFirstAndMiddle <= 0 && compareMiddleAndLast >= 0 && compareFirstAndLast <= compareMiddleAndLast)) {
+                    medianIndex = midpoint;
+                } else {
+                    medianIndex = rightEndingIndex;
+                }
+
+                // Swap the median to the front. It will be the pivot element.
+                swap(list, leftStartingIndex, medianIndex);
                 pivotElement = list.get(leftStartingIndex);
                 break;
 
