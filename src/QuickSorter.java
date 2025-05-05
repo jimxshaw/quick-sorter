@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class QuickSorter {
     public enum PivotStrategy {
@@ -6,6 +8,24 @@ public class QuickSorter {
         RANDOM_ELEMENT,
         MEDIAN_OF_THREE_RANDOM_ELEMENTS,
         MEDIAN_OF_THREE_ELEMENTS
+    }
+
+    public static ArrayList<Integer> generateRandomList(int size) {
+        // The input size cannot be negative. Must be 0 or greater.
+        if (size < 0) {
+            throw new IllegalArgumentException("Input size cannot be negative.");
+        }
+
+        Random randomNumber = new Random();
+        ArrayList<Integer> myList = new ArrayList<>(size);
+
+        // Create random integers according to the input size
+        // and add them to the list.
+        for (int i = 0; i< size; i++) {
+            myList.add(randomNumber.nextInt());
+        }
+
+        return myList;
     }
 
     // In-place insertion sort on an input sub-list.
