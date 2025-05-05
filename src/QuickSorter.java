@@ -1,3 +1,4 @@
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -10,6 +11,26 @@ public class QuickSorter {
         MEDIAN_OF_THREE_ELEMENTS
     }
 
+    // Takes input list and sort it in-place using the QuickSort
+    // algorithm with a different pivot selection strategy. It returns
+    // the time in nanoseconds of how long it took to sort the list.
+    public static <E extends Comparable<E>>Duration timedQuickSort(ArrayList<E> list, PivotStrategy pivotStrategy) {
+        validateInput(list, pivotStrategy);
+
+        // Mark the start time.
+        long startTime = System.nanoTime();
+
+        // Call the quickSort method that uses recursion.
+        quickSort(list, 0, list.size() - 1, pivotStrategy);
+
+        // Mark the end time.
+        long endTime = System.nanoTime();
+
+        return Duration.ofNanos(endTime - startTime);
+    }
+
+    // Generates and returns a new integer array list with the given size that
+    // consists of random unsorted values.
     public static ArrayList<Integer> generateRandomList(int size) {
         // The input size cannot be negative. Must be 0 or greater.
         if (size < 0) {
@@ -26,6 +47,83 @@ public class QuickSorter {
         }
 
         return myList;
+    }
+
+    private static <E extends Comparable<E>> void validateInput(ArrayList<E> list, PivotStrategy pivotStrategy) {
+        if (list == null) {
+            throw new NullPointerException("Input list cannot be null.");
+        }
+
+        if (pivotStrategy == null) {
+            throw new NullPointerException("Pivot strategy cannot be null.");
+        }
+    }
+
+    // Use recursion to sort a portion of the input list using quick sort.
+    // Arrays with less than 20 elements will use insertion sort.
+    private static <E extends Comparable<E>> void quickSort(ArrayList<E> list, int leftStartingIndex, int rightEndingIndex, PivotStrategy pivotStrategy) {
+        // Use insertion sort if input list is small.
+        if (rightEndingIndex - leftStartingIndex + 1 < 20) {
+            insertionSort(list, leftStartingIndex, rightEndingIndex);
+
+            // A return statement must be here to
+            // prevent the rest of the method from running.
+            return;
+        }
+
+        E pivotElement;
+
+        // Figure out the pivot strategy.
+        if (pivotStrategy == PivotStrategy.FIRST_ELEMENT) {
+            // Use the first element as the pivot element.
+            pivotElement = list.get(leftStartingIndex);
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported Pivot Strategy.");
+        }
+
+        // Variables used for partitioning.
+        int i = leftStartingIndex + 1; // Begin right after the pivot element.
+        int j = rightEndingIndex; // Begin at the end of the list.
+
+        // Re-arranged the elements around the pivot element when partitioning.
+        while (i <= j) {
+            // Move i to the right as long as elements are <= pivot element.
+            while (i <= j && list.get(i).compareTo(pivotElement) <= 0) {
+                i++;
+            }
+
+            // Move j to the left as long as elements are > pivot element.
+            while (i <= j && list.get(j).compareTo(pivotElement) > 0) {
+                j--;
+            }
+
+            // Swap elements if they're out of order and i & j haven't crossed.
+            if (i < j) {
+                swap(list, i, j);
+                i++;
+                j--;
+            }
+        }
+
+        // Put the pivot element in the right position by swapping with list[j].
+        swap(list, leftStartingIndex, j);
+
+        // Use recursion to sort elements less than pivot element.
+        quickSort(list, leftStartingIndex, j - 1, pivotStrategy);
+
+        // Use recursion to sort elements greater than pivot element.
+        quickSort(list, j + 1, rightEndingIndex, pivotStrategy);
+
+    }
+
+    // Swap the elements at the indices given within the input list.
+    private static <E> void swap(ArrayList<E> list, int firstIndex, int secondIndex) {
+        // A temporary variable is needed to "hold" oen of the
+        // elements when it comes to swapping.
+        E temporary = list.get(firstIndex);
+        list.set(firstIndex, list.get(secondIndex));
+        list.set(secondIndex, temporary);
     }
 
     // In-place insertion sort on an input sub-list.
